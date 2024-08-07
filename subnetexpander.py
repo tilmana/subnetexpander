@@ -1,11 +1,12 @@
 import ipaddress
 import argparse
 
-parser = argparse.ArgumentParser(description="Get IPs from one or more subnets passed via an argument directly or read from a file.")
+parser = argparse.ArgumentParser(description="Get IPs from one or more subnets passed via an argument directly or read from a file")
 group = parser.add_mutually_exclusive_group(required=True)
 group.add_argument('-s', '--subnet', help='Subnet to pass directly')
 group.add_argument('-f', '--file', help='File to read subnet(s) from')
 parser.add_argument('-c,', '--csv', help='Defines whether file type is separated by commas versus newlines', action="store_true")
+parser.add_argument('-o,', '--output', help='File to write output to')
 
 args = parser.parse_args()
 
@@ -17,6 +18,7 @@ if args.subnet:
 
 if args.file:
     subnets = []
+    output = []
     f1 = open(args.file, "r")
     if args.csv:
         f1line = f1.readline()
@@ -32,3 +34,9 @@ if args.file:
         ips = [str(ip) for ip in ipaddress.IPv4Network(subnet)]
         for ip in ips:
             print(ip)
+            output.append(ip)
+    if args.output:
+        outputFile = open(args.output, "w")
+        for ip in output:
+            outputFile.write(ip + "\n")
+        outputFile.close()
